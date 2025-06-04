@@ -169,6 +169,10 @@ export const routes: Routes = [
     Component: Register,
   },
   {
+    path: '/register/activation/:activationHash',
+    Component: Register,
+  },
+  {
     path: '/logout/',
     Component: Login,
   },
@@ -266,10 +270,6 @@ export const routes: Routes = [
     path: '/sqllab/',
     Component: SqlLab,
   },
-  {
-    path: '/registrations/',
-    Component: UserRegistrations,
-  },
 ];
 
 if (isFeatureEnabled(FeatureFlag.TaggingSystem)) {
@@ -284,6 +284,9 @@ if (isFeatureEnabled(FeatureFlag.TaggingSystem)) {
 }
 
 const user = getBootstrapData()?.user;
+const authRegistrationEnabled =
+  getBootstrapData()?.common.conf.AUTH_USER_REGISTRATION;
+console.log({ authRegistrationEnabled });
 const isAdmin = isUserAdmin(user);
 
 if (isAdmin) {
@@ -297,6 +300,13 @@ if (isAdmin) {
       Component: UsersList,
     },
   );
+}
+
+if (authRegistrationEnabled) {
+  routes.push({
+    path: '/registrations/',
+    Component: UserRegistrations,
+  });
 }
 
 const frontEndRoutes: Record<string, boolean> = routes
