@@ -76,6 +76,7 @@ import {
   FileOutlined,
   FileTextOutlined,
   FireOutlined,
+  FormOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   FundProjectionScreenOutlined,
@@ -135,6 +136,7 @@ import {
   GithubOutlined,
   GoogleOutlined,
   FacebookOutlined,
+  ExportOutlined,
 } from '@ant-design/icons';
 import { FC } from 'react';
 import { IconType } from './types';
@@ -201,6 +203,7 @@ const AntdIcons = {
   FileOutlined,
   FileTextOutlined,
   FireOutlined,
+  FormOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   FundProjectionScreenOutlined,
@@ -259,6 +262,7 @@ const AntdIcons = {
   WarningOutlined,
   SortAscendingOutlined,
   KeyOutlined,
+  ExportOutlined,
 } as const;
 
 type AntdIconNames = keyof typeof AntdIcons;
