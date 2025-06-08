@@ -1522,7 +1522,6 @@ class BaseEngineSpec:  # pylint: disable=too-many-public-methods
     def get_valid_columns(
         cls,
         database: Database,
-        inspector: Inspector,
         datasource: ExploreMixin,
         columns: set[str],
         metrics: set[str],

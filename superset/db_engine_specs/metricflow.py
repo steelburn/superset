@@ -48,7 +48,7 @@ SELECT_STAR_MESSAGE = (
 
 class MetricType(TypedDict, total=False):
     """
-    Type for metrics return by `get_metrics`.
+    Type for metrics returned by `get_metrics`.
     """
 
     metric_name: str
@@ -69,7 +69,8 @@ class DbtMetricFlowEngineSpec(ShillelaghEngineSpec):
     engine = "metricflow"
     engine_name = "dbt Metric Flow"
     sqlalchemy_uri_placeholder = (
-        "metricflow:///<environment_id>?service_token=<service_token>"
+        "metricflow://[ab123.us1.dbt.com]/<environment_id>"
+        "?service_token=<service_token>"
     )
 
     supports_dynamic_columns = True
@@ -144,7 +145,6 @@ class DbtMetricFlowEngineSpec(ShillelaghEngineSpec):
     def get_valid_columns(
         cls,
         database: Database,
-        inspector: Inspector,
         datasource: ExploreMixin,
         columns: set[str],
         metrics: set[str],
@@ -155,8 +155,9 @@ class DbtMetricFlowEngineSpec(ShillelaghEngineSpec):
         Given a datasource, and sets of selected metrics and dimensions, return the
         sets of valid metrics and dimensions that can further be selected.
         """
-        connection = inspector.engine.connect()
-        adapter = get_adapter_for_table_name(connection, TABLE_NAME)
+        with database.get_sqla_engine() as engine:
+            connection = engine.connect()
+            adapter = get_adapter_for_table_name(connection, TABLE_NAME)
 
         return {
             "metrics": adapter._get_metrics_for_dimensions(columns),
