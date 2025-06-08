@@ -17,7 +17,6 @@ from sqlalchemy.sql.visitors import VisitableType
 from superset.extensions import cache_manager
 from superset.utils.cache import memoized_func
 
-
 TABLE_NAME = "metrics"
 
 
@@ -38,7 +37,7 @@ def get_sqla_type(field: Field) -> VisitableType:
     return type_map.get(field.type, sqlalchemy.types.TEXT)
 
 
-class PresetDbtMetricFlowAPI(DbtMetricFlowAPI):
+class DbtMetricFlowAPI(DbtMetricFlowAPI):
     """
     Custom API adapter for dbt Metric Flow API.
 
@@ -97,7 +96,7 @@ class PresetDbtMetricFlowAPI(DbtMetricFlowAPI):
             cache_timeout=int(timedelta(days=1).total_seconds()),
         )
 
-    @memoized_func(key="dbt:dimension:{name}", cache=cache_manager.data_cache)
+    @memoized_func(key="metricflow:dimension:{name}", cache=cache_manager.data_cache)
     def _cached_build_column_from_dimension(
         self,
         name: str,
@@ -116,15 +115,15 @@ class DbtMetricFlowDialect(APSWDialect):
 
     URL should look like:
 
-        dbt:///<environment_id>?service_token=<service_token>
+        metricflow:///<environment_id>?service_token=<service_token>
 
     Or when using a custom URL:
 
-        dbt://ab123.us1.dbt.com/<environment_id>?service_token=<service_token>
+        metricflow://ab123.us1.dbt.com/<environment_id>?service_token=<service_token>
 
     """
 
-    name = "dbt"
+    name = "metricflow"
 
     supports_statement_cache = True
 
@@ -139,9 +138,9 @@ class DbtMetricFlowDialect(APSWDialect):
             (),
             {
                 "path": ":memory:",
-                "adapters": ["presetdbtmetricflowapi"],
+                "adapters": ["dbtmetricflowapi"],
                 "adapter_kwargs": {
-                    "presetdbtmetricflowapi": {
+                    "dbtmetricflowapi": {
                         "service_token": url.query["service_token"],
                         "environment_id": int(url.database),
                         "url": baseurl,
@@ -180,9 +179,11 @@ class DbtMetricFlowDialect(APSWDialect):
         adapter = get_adapter_for_table_name(connection, table_name)
 
         columns = {
-            adapter.grains[dimension][0]
-            if dimension in adapter.grains
-            else dimension: adapter.columns[dimension]
+            (
+                adapter.grains[dimension][0]
+                if dimension in adapter.grains
+                else dimension
+            ): adapter.columns[dimension]
             for dimension in adapter.dimensions
         }
 

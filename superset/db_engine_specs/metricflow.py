@@ -15,33 +15,34 @@
 # specific language governing permissions and limitations
 # under the License.
 """
-An interface to dbt's semantic layer.
+An interface to dbt's semantic layer, Metric Flow.
 """
 
 from __future__ import annotations
 
-from typing import Any, TypedDict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, TypedDict
 
 from shillelagh.backends.apsw.dialects.base import get_adapter_for_table_name
 
 from superset.constants import TimeGrain
 from superset.db_engine_specs.base import ValidColumnsType
 from superset.db_engine_specs.shillelagh import ShillelaghEngineSpec
-from superset.extensions.dbt import TABLE_NAME
+from superset.extensions.metricflow import TABLE_NAME
 from superset.models.helpers import ExploreMixin
 from superset.superset_typing import ResultSetColumnType
 
 if TYPE_CHECKING:
+    from sqlalchemy.engine.reflection import Inspector
+
     from superset.models.core import Database
     from superset.sql_parse import Table
-    from sqlalchemy.engine.reflection import Inspector
 
 
 SELECT_STAR_MESSAGE = (
-    'The dbt semantic layer does not support data preview, since the "metrics" table is '
-    "a virtual table that is not materialized. An administrator should configure the "
-    'database in Apache Superset so that the "Disable SQL Lab data preview queries" '
-    'option under "Advanced" → "SQL Lab" is enabled.'
+    'The dbt semantic layer does not support data preview, since the "metrics" table '
+    "is a virtual table that is not materialized. An administrator should configure "
+    'the database in Apache Superset so that the "Disable SQL Lab data preview '
+    'queries" option under "Advanced" → "SQL Lab" is enabled.'
 )
 
 
@@ -65,9 +66,11 @@ class DbtMetricFlowEngineSpec(ShillelaghEngineSpec):
     Engine for the the dbt semantic layer.
     """
 
-    engine = "dbt"
-    engine_name = "dbt Semantic Layer"
-    sqlalchemy_uri_placeholder = "dbt:///<environment_id>?service_token=<service_token>"
+    engine = "metricflow"
+    engine_name = "dbt Metric Flow"
+    sqlalchemy_uri_placeholder = (
+        "metricflow:///<environment_id>?service_token=<service_token>"
+    )
 
     supports_dynamic_columns = True
 
