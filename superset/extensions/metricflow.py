@@ -37,7 +37,7 @@ def get_sqla_type(field: Field) -> VisitableType:
     return type_map.get(field.type, sqlalchemy.types.TEXT)
 
 
-class DbtMetricFlowAPI(DbtMetricFlowAPI):
+class SupersetMetricFlowAPI(DbtMetricFlowAPI):
     """
     Custom API adapter for dbt Metric Flow API.
 
@@ -109,7 +109,7 @@ class DbtMetricFlowAPI(DbtMetricFlowAPI):
         return super()._build_column_from_dimension(name)
 
 
-class DbtMetricFlowDialect(APSWDialect):
+class MetricFlowDialect(APSWDialect):
     """
     A dbt Metric Flow dialect.
 
@@ -138,9 +138,9 @@ class DbtMetricFlowDialect(APSWDialect):
             (),
             {
                 "path": ":memory:",
-                "adapters": ["dbtmetricflowapi"],
+                "adapters": ["supersetmetricflowapi"],
                 "adapter_kwargs": {
-                    "dbtmetricflowapi": {
+                    "supersetmetricflowapi": {
                         "service_token": url.query["service_token"],
                         "environment_id": int(url.database),
                         "url": baseurl,
