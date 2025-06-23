@@ -72,6 +72,15 @@ const MenuDotsWrapper = styled.div`
   padding-left: ${({ theme }) => theme.sizeUnit}px;
 `;
 
+export enum IconOrientation {
+  Vertical = 'vertical',
+  Horizontal = 'horizontal',
+}
+
+export interface MenuDotsDropdownProps extends AntdDropdownProps {
+  iconOrientation?: IconOrientation;
+}
+
 const RenderIcon = (
   iconOrientation: IconOrientation = IconOrientation.Vertical,
 ) => {

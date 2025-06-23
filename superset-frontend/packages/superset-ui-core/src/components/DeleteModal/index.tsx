@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { InputRef } from 'antd-v5';
 import { t, styled } from '@superset-ui/core';
-import { useState, ChangeEvent } from 'react';
-import { FormLabel } from '../Form';
-import { Input } from '../Input';
-import { Modal } from '../Modal';
-import type { DeleteModalProps } from './types';
+import { useState, useRef, useEffect, ReactNode, ChangeEvent } from 'react';
+import { Input } from 'src/components/Input';
+import Modal from 'src/components/Modal';
+import { FormLabel } from 'src/components/Form';
 
 const StyledDiv = styled.div`
   padding-top: 8px;
@@ -45,6 +45,13 @@ export function DeleteModal({
 }: DeleteModalProps) {
   const [disableChange, setDisableChange] = useState(true);
   const [confirmation, setConfirmation] = useState<string>('');
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
 
   const hide = () => {
     setConfirmation('');
@@ -92,6 +99,7 @@ export function DeleteModal({
           value={confirmation}
           onChange={onChange}
           onPressEnter={onPressEnter}
+          ref={inputRef}
         />
       </StyledDiv>
     </Modal>

@@ -26,8 +26,50 @@ import Draggable, {
   DraggableData,
   DraggableEvent,
 } from 'react-draggable';
-import { Button } from '../Button';
-import type { ModalProps, StyledModalProps } from './types';
+
+export interface ModalProps {
+  className?: string;
+  children: ReactNode;
+  disablePrimaryButton?: boolean;
+  primaryTooltipMessage?: ReactNode;
+  primaryButtonLoading?: boolean;
+  onHide: () => void;
+  onHandledPrimaryAction?: () => void;
+  primaryButtonName?: string;
+  primaryButtonType?: 'primary' | 'danger';
+  show: boolean;
+  name?: string;
+  title: ReactNode;
+  width?: string;
+  maxWidth?: string;
+  responsive?: boolean;
+  hideFooter?: boolean;
+  centered?: boolean;
+  footer?: ReactNode;
+  wrapProps?: object;
+  height?: string;
+  closable?: boolean;
+  resizable?: boolean;
+  resizableConfig?: ResizableProps;
+  draggable?: boolean;
+  draggableConfig?: DraggableProps;
+  destroyOnClose?: boolean;
+  maskClosable?: boolean;
+  zIndex?: number;
+  bodyStyle?: CSSProperties;
+  openerRef?: React.RefObject<HTMLElement>;
+}
+
+interface StyledModalProps {
+  maxWidth?: string;
+  responsive?: boolean;
+  height?: string;
+  hideFooter?: boolean;
+  draggable?: boolean;
+  resizable?: boolean;
+}
+
+export type { ModalFuncProps };
 
 const MODAL_HEADER_HEIGHT = 55;
 const MODAL_MIN_CONTENT_HEIGHT = 54;
@@ -215,27 +257,33 @@ const CustomModal = ({
   resizableConfig = defaultResizableConfig(hideFooter),
   draggableConfig,
   destroyOnClose,
+  openerRef,
   ...rest
 }: ModalProps) => {
   const draggableRef = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState<DraggableBounds>();
   const [dragDisabled, setDragDisabled] = useState<boolean>(true);
+
+  const handleOnHide = () => {
+    openerRef?.current?.focus();
+    onHide();
+  };
+
   let FooterComponent;
   if (isValidElement(footer)) {
     // If a footer component is provided inject a closeModal function
     // so the footer can provide a "close" button if desired
     FooterComponent = cloneElement(footer, {
-      closeModal: onHide,
+      closeModal: handleOnHide,
     } as Partial<unknown>);
   }
   const modalFooter = isNil(FooterComponent)
     ? [
         <Button
           key="back"
-          onClick={onHide}
+          onClick={handleOnHide}
           cta
           data-test="modal-cancel-button"
-          buttonStyle="secondary"
         >
           {t('Cancel')}
         </Button>,
@@ -295,7 +343,7 @@ const CustomModal = ({
     <StyledModal
       centered={!!centered}
       onOk={onHandledPrimaryAction}
-      onCancel={onHide}
+      onCancel={handleOnHide}
       width={modalWidth}
       maxWidth={maxWidth}
       responsive={responsive}

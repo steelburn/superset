@@ -18,12 +18,11 @@
  */
 import { useState, FC } from 'react';
 
-import { t } from '@superset-ui/core';
-import { Icons } from '@superset-ui/core/components/Icons';
-import { Label } from '../Label';
-import { Tooltip } from '../Tooltip';
+import { css, t } from '@superset-ui/core';
+import Label from 'src/components/Label';
+import { Tooltip } from 'src/components/Tooltip';
 import { TooltipContent } from './TooltipContent';
-import type { CacheLabelProps } from './types';
+import { Icons } from '../Icons';
 
 export const CachedLabel: FC<CacheLabelProps> = ({
   className,
@@ -40,6 +39,9 @@ export const CachedLabel: FC<CacheLabelProps> = ({
     >
       <Label
         className={`${className}`}
+        css={theme => css`
+          gap: ${theme.gridUnit * 0.5}px;
+        `}
         type={labelType}
         onClick={onClick}
         onMouseOver={() => setHovered(true)}
@@ -47,6 +49,7 @@ export const CachedLabel: FC<CacheLabelProps> = ({
         icon={<Icons.ReloadOutlined iconSize="m" />}
       >
         {t('Cached')}
+        <Icons.SyncOutlined iconSize="m" />
       </Label>
     </Tooltip>
   );
